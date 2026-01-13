@@ -1,0 +1,227 @@
+🔥 SkillSwap Hub – Full Guidance Plan
+
+We’ll build this in PHASES, and each phase will be complete, testable, and commit-ready.
+
+Tech Stack (Modern & Phase-4 Safe)
+
+Frontend
+
+React (Vite)
+
+React Router v6
+
+Context API (cleaner than Redux for MVP)
+
+Axios
+
+TailwindCSS
+
+Backend
+
+FastAPI
+
+SQLAlchemy 2.0
+
+PostgreSQL
+
+JWT Auth (access + refresh)
+
+Google OAuth 2.0
+
+Google Calendar API (Meet links)
+
+Deployment
+
+Frontend: Vercel
+
+Backend: Render
+
+DB: Render PostgreSQL
+
+🧭 PHASE BREAKDOWN (Roadmap)
+Phase 0 – Architecture & Repo Setup
+
+✔ Folder structure
+✔ Environment variables
+✔ Database schema
+✔ Auth strategy
+✔ Google OAuth flow design
+
+➡️ We do this now
+
+Phase 1 – Backend Core
+
+User model & auth (JWT)
+
+Skill CRUD
+
+Session model
+
+Database relationships
+
+Phase 2 – Google Meet Integration
+
+Google OAuth
+
+Calendar event creation
+
+Meet link generation
+
+Store & manage meet links
+
+Phase 3 – Frontend Core
+
+Routing (public + protected)
+
+Auth context
+
+Dashboard
+
+Skills & sessions UI
+
+Phase 4 – Bookings + Live Sessions
+
+Booking workflow
+
+Join live session
+
+Profile & session management
+
+Phase 5 – Polish, Deploy & Docs
+
+UI polish
+
+Error handling
+
+Deployment
+
+README & screenshots
+
+🚀 PHASE 0 – PROJECT STRUCTURE (IMPORTANT)
+📁 Root Repository
+skillswap-hub/
+│
+├── backend/
+├── frontend/
+├── README.md
+├── .gitignore
+└── LICENSE
+
+🧠 BACKEND STRUCTURE (FastAPI – Clean & Scalable)
+backend/
+│
+├── app/
+│   ├── main.py
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── security.py
+│   │   └── oauth.py
+│   │
+│   ├── db/
+│   │   ├── base.py
+│   │   ├── session.py
+│   │   └── init_db.py
+│   │
+│   ├── models/
+│   │   ├── user.py
+│   │   ├── skill.py
+│   │   ├── session.py
+│   │   └── booking.py
+│   │
+│   ├── schemas/
+│   │   ├── user.py
+│   │   ├── skill.py
+│   │   ├── session.py
+│   │   └── booking.py
+│   │
+│   ├── api/
+│   │   ├── deps.py
+│   │   └── routes/
+│   │       ├── auth.py
+│   │       ├── users.py
+│   │       ├── skills.py
+│   │       ├── sessions.py
+│   │       └── bookings.py
+│   │
+│   ├── services/
+│   │   └── google_calendar.py
+│   │
+│   └── utils/
+│       └── tokens.py
+│
+├── alembic/
+├── requirements.txt
+└── .env
+
+
+✔ This structure = interview-safe + production-grade
+
+🎨 FRONTEND STRUCTURE (React SPA)
+frontend/
+│
+├── src/
+│   ├── api/
+│   │   ├── axios.js
+│   │   ├── authApi.js
+│   │   ├── skillApi.js
+│   │   └── sessionApi.js
+│   │
+│   ├── context/
+│   │   ├── AuthContext.jsx
+│   │   └── SessionContext.jsx
+│   │
+│   ├── components/
+│   │   ├── Navbar.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   └── SessionCard.jsx
+│   │
+│   ├── pages/
+│   │   ├── Login.jsx
+│   │   ├── Register.jsx
+│   │   ├── Dashboard.jsx
+│   │   ├── Skills.jsx
+│   │   ├── SkillDetails.jsx
+│   │   ├── Teach.jsx
+│   │   ├── Bookings.jsx
+│   │   ├── Profile.jsx
+│   │   └── LiveSession.jsx
+│   │
+│   ├── routes/
+│   │   └── AppRoutes.jsx
+│   │
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+│
+├── tailwind.config.js
+└── .env
+
+🔐 AUTH STRATEGY (Important for Phase 4)
+
+JWT access token → stored in memory
+
+Refresh token → HTTP-only cookie
+
+Protected routes via <ProtectedRoute />
+
+Google OAuth only required for teachers creating sessions
+
+🧩 DATABASE MODELS (Preview)
+
+We will implement:
+
+User
+ ├─ Skills (1 → many)
+ ├─ Sessions (1 → many)
+ └─ Bookings (many ↔ many)
+
+Skill
+ └─ Sessions
+
+Session
+ ├─ Meet link
+ └─ Bookings
+
+Booking
+
+
