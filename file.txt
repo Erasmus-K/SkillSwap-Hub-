@@ -1,0 +1,36 @@
+PHASE 4 PROJECT REQUIREMENTS
+
+Welcome to project week. It is time to put together a project that accumulates all your skills from the beginning of the course to this point. This week, you will be required to work in teams and develop full-stack web applications.
+
+This document provides a detailed description of what the project is expected to adhere to:
+Minimum Viable Product
+The web application you create must contain the following:
+Single Page Client Application
+Your client application should be built using the React library.
+You should have at least 8 routes within your application.
+You should have at least 5 of your app routes protected. (Protected routes are ones that require some form of authentication needed before accessing them)
+You should allow the user to reset their password if they have forgotten it.
+
+Backend REST API
+You should have at least 8 endpoints. (At least 2 for each of the following methods:- POST, GET, PUT, DELETE, PATCH)
+At least 5 of your endpoints should require the user to be logged in in order to access them.
+You should have at least 4 database models, each model should have at least 4 columns excluding the unique identifier.
+Within your database schema have at least two (2); one-to-many relationship(s)
+Within your database schema have at least one(1);  many-to-many relationship(s)
+
+Technical Requirements
+Every single repository should have a detailed README file explaining how to set up the codebase upon cloning/forking 
+Use JWT for authentication
+Implement any state management library for the front end using Redux, Zustand, ContextAPI, or any.
+You should have regular git commits, and the messages should be clear and concise.
+Your application must be deployed and accessible through a remote URL. (You can choose whichever deployment platform you wish)
+Your project should be structured in an organized manner.
+Your web application should have proper styling. Ensure it looks professional and clean. Make use of frontend libraries like Bootstrap or TailwindCSS.
+Your app must be a REACT frontend that accesses data from your FASTAPI  API. All client and API interactions should be handled asynchronously and use JSON as the communication format. 
+Your entire app must run on a single-page application. There should be NO redirects. In other words, your project will contain a single HTML file.
+Follow good coding practices. Keep your code DRY (Do not repeat yourself) by utilizing functions to abstract repetitive code.
+Your repository should include a license. (Adding a license to a repository - GitHub Docs) 
+Your project MVP MUST be completed within the stipulated timeline.
+Since this is a group project, you are expected to contribute to a single repository. You can use this page to learn more about this: Git Remote | Atlassian Git Tutorial 
+
+NOTE: UPDATE THE PROJECT TRACKER DOC EVERY DAY. LINK HERE
