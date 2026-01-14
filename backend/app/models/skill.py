@@ -1,21 +1,38 @@
-from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime, Float
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql import func
-from ..db.session import Base
+# add_skill.py
 
-class Skill(Base):
-    __tablename__ = "skills"
+from sqlalchemy.orm import Session
+from app.db.database import SessionLocal, engine
+from app.models.skill import Skill  # adjust path if needed
+from app.models.user import User     # needed if you reference creator
 
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String, nullable=False, index=True)
-    description = Column(Text, nullable=False)
-    category = Column(String, nullable=False)
-    difficulty_level = Column(String, nullable=False)  # beginner, intermediate, advanced
-    price_per_hour = Column(Float, nullable=False)
-    teacher_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+# Create tables if they don't exist
+from app.db.database import Base
+Base.metadata.create_all(bind=engine)
 
-    # Relationships
-    teacher = relationship("User", back_populates="skills")
-    sessions = relationship("Session", back_populates="skill")
+def add_skill(title: str, description: str, category: str, created_by: int):
+    db: Session = SessionLocal()
+    try:
+        skill = Skill(
+            title=title,
+            description=description,
+            category=category,
+            created_by=created_by
+        )
+        db.add(skill)
+        db.commit()
+        db.refresh(skill)
+        print(f"Skill added: {skill.title} (ID: {skill.id})")
+    except Exception as e:
+        print("Error:", e)
+        db.rollback()
+    finally:
+        db.close()
+
+if __name__ == "__main__":
+    # Example: add a Python skill created by user with ID 
+    add_skill(
+        title="Python Programming",
+        description="Learn the basics of Python programming.",
+        category="Programming",
+        created_by=1  # Ensure this user ID exists in your database
+    )

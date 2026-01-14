@@ -1,5 +1,41 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.routes import auth, skills
+from app.db.database import engine
+from app.db.database import Base
+
+
+# Create database tables
+Base.metadata.create_all(bind=engine)
+
+app = FastAPI(
+    title="SkillSwap Hub API",
+    description="A peer-to-peer micro-learning platform",
+    version="1.0.0"
+)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(auth.router, prefix="/auth", tags=["authentication"])
+app.include_router(skills.router, prefix="/skills", tags=["skills"])
+
+@app.get("/")
+def read_root():
+    return {"message": "Welcome to SkillSwap Hub API"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy"}
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from .api.routes import auth, users, skills, sessions, bookings
 from .db.session import engine, Base
 
