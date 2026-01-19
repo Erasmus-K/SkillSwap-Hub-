@@ -8,4 +8,6 @@ __pycache__/
 node_modules/
 dist/
 build/
-*.log           
+*.log
+venv/
+backend/venv/
