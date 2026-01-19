@@ -1,76 +1,63 @@
-# SkillSwap Hub Backend
+# SkillSwap Hub - Backend API
 
-FastAPI backend for the SkillSwap Hub application - a platform for skill sharing and learning sessions.
+Production-ready FastAPI backend for the SkillSwap Hub peer-to-peer micro-learning platform.
 
 ## Features
 
-- JWT Authentication with access and refresh tokens
-- User registration and login
-- Skills CRUD operations
-- Sessions management
-- Booking system
-- Protected routes
-- PostgreSQL database with SQLAlchemy ORM
-- Database migrations with Alembic
+- **JWT Authentication** with bcrypt password hashing
+- **PostgreSQL** database with SQLAlchemy ORM
+- **RESTful API** with automatic OpenAPI documentation
+- **Database migrations** with Alembic
+- **CORS support** for frontend integration
+- **Production-ready** with proper error handling
 
 ## Tech Stack
 
-- **FastAPI** - Modern, fast web framework
+- **FastAPI** - Modern Python web framework
 - **SQLAlchemy 2.0** - SQL toolkit and ORM
-- **PostgreSQL** - Database
-- **JWT** - Authentication
-- **Alembic** - Database migrations
+- **PostgreSQL** - Production database
+- **Alembic** - Database migration tool
+- **JWT** - JSON Web Token authentication
+- **Bcrypt** - Password hashing
 - **Pydantic** - Data validation
 
-## Setup Instructions
+## Quick Start
 
 ### Prerequisites
 
 - Python 3.8+
-- PostgreSQL
-- pip
+- PostgreSQL database
+- pip or poetry
 
 ### Installation
 
-1. Clone the repository and navigate to backend:
-```bash
-cd backend
-```
-
-2. Create virtual environment:
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-```
-
-3. Install dependencies:
+1. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Set up environment variables:
+2. Set up environment variables in `.env`:
 ```bash
-cp .env.example .env
+DATABASE_URL=postgresql://username:password@localhost:5432/skillswap_db
+SECRET_KEY=your-super-secret-key-change-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ```
 
-Edit `.env` with your database credentials and secret key:
-```
-DATABASE_URL=postgresql://username:password@localhost/skillswap_db
-SECRET_KEY=your-super-secret-key-here
-```
-
-5. Create database:
+3. Create database:
 ```bash
 createdb skillswap_db
 ```
 
-6. Run database migrations:
+4. Run database migrations:
 ```bash
 alembic upgrade head
 ```
 
-7. Start the server:
+5. Start the server:
 ```bash
+python run.py
+# or
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
@@ -78,9 +65,8 @@ The API will be available at `http://localhost:8000`
 
 ## API Documentation
 
-Once the server is running, visit:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
+- **Swagger UI**: http://localhost:8000/docs
+- **ReDoc**: http://localhost:8000/redoc
 
 ## API Endpoints
 
@@ -88,56 +74,35 @@ Once the server is running, visit:
 - `POST /auth/register` - Register new user
 - `POST /auth/login` - Login user
 
-### Users
-- `GET /users/me` - Get current user profile
-- `PUT /users/me` - Update current user profile
-- `GET /users/` - Get all users
-- `GET /users/{user_id}` - Get user by ID
-
 ### Skills
-- `POST /skills/` - Create new skill (protected)
-- `GET /skills/` - Get all skills
-- `GET /skills/{skill_id}` - Get skill by ID
-- `PUT /skills/{skill_id}` - Update skill (protected)
-- `DELETE /skills/{skill_id}` - Delete skill (protected)
+- `GET /skills` - List all skills
+- `POST /skills` - Create new skill (authenticated)
+- `GET /skills/{id}` - Get skill by ID
+- `PUT /skills/{id}` - Update skill (owner only)
+- `DELETE /skills/{id}` - Delete skill (owner only)
 
-### Sessions
-- `POST /sessions/` - Create new session (protected)
-- `GET /sessions/` - Get all sessions
-- `GET /sessions/{session_id}` - Get session by ID
-- `PUT /sessions/{session_id}` - Update session (protected)
-- `DELETE /sessions/{session_id}` - Delete session (protected)
+## Database Models
 
-### Bookings
-- `POST /bookings/` - Create new booking (protected)
-- `GET /bookings/` - Get user's bookings (protected)
-- `GET /bookings/{booking_id}` - Get booking by ID (protected)
-- `PATCH /bookings/{booking_id}` - Update booking (protected)
-- `DELETE /bookings/{booking_id}` - Cancel booking (protected)
+### User
+- `id` (Integer, Primary Key)
+- `name` (String, Required)
+- `email` (String, Unique, Required)
+- `password_hash` (String, Required)
+- `role` (Enum: student/teacher/admin)
+- `created_at` (DateTime)
 
-## Database Schema
-
-### Models
-- **User**: User accounts with authentication
-- **Skill**: Skills offered by teachers
-- **Session**: Learning sessions for specific skills
-- **Booking**: Student bookings for sessions
-
-### Relationships
-- User → Skills (1:many)
-- User → Sessions (1:many)
-- User → Bookings (1:many)
-- Skill → Sessions (1:many)
-- Session → Bookings (1:many)
+### Skill
+- `id` (Integer, Primary Key)
+- `title` (String, Required)
+- `description` (Text)
+- `category` (String, Required)
+- `created_by` (Foreign Key → User)
+- `created_at` (DateTime)
 
 ## Development
 
-### Running Tests
-```bash
-pytest
-```
-
 ### Database Migrations
+
 Create new migration:
 ```bash
 alembic revision --autogenerate -m "Description"
@@ -148,6 +113,84 @@ Apply migrations:
 alembic upgrade head
 ```
 
-## License
+### Testing with curl
 
-MIT License
+Register user:
+```bash
+curl -X POST "http://localhost:8000/auth/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "password": "password123"
+  }'
+```
+
+Login:
+```bash
+curl -X POST "http://localhost:8000/auth/login" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "john@example.com",
+    "password": "password123"
+  }'
+```
+
+Create skill (with token):
+```bash
+curl -X POST "http://localhost:8000/skills" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -d '{
+    "title": "Python Programming",
+    "description": "Learn Python basics",
+    "category": "Programming"
+  }'
+```
+
+## Project Structure
+
+```
+backend/
+├── app/
+│   ├── api/
+│   │   ├── routes/
+│   │   │   ├── auth.py      # Authentication endpoints
+│   │   │   └── skills.py    # Skills CRUD endpoints
+│   │   └── deps.py          # Dependencies (auth, db)
+│   ├── core/
+│   │   ├── config.py        # Settings configuration
+│   │   └── security.py      # JWT & password utilities
+│   ├── db/
+│   │   └── database.py      # Database connection
+│   ├── models/
+│   │   ├── user.py          # User SQLAlchemy model
+│   │   └── skill.py         # Skill SQLAlchemy model
+│   ├── schemas/
+│   │   ├── user.py          # User Pydantic schemas
+│   │   └── skill.py         # Skill Pydantic schemas
+│   └── main.py              # FastAPI application
+├── alembic/                 # Database migrations
+├── requirements.txt         # Python dependencies
+├── .env                     # Environment variables
+└── run.py                   # Development server
+```
+
+## Deployment
+
+For production deployment:
+
+1. Set strong `SECRET_KEY` in environment
+2. Use production PostgreSQL database
+3. Set `reload=False` in uvicorn
+4. Use proper ASGI server like Gunicorn
+5. Set up reverse proxy (nginx)
+6. Enable HTTPS
+
+## Contributing
+
+1. Fork the repository
+2. Create feature branch
+3. Make changes
+4. Run tests
+5. Submit pull request
