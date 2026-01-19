@@ -6,5 +6,5 @@ export const authApi = {
   logout: () => api.post('/auth/logout'),
   refreshToken: () => api.post('/auth/refresh'),
   googleAuth: (token) => api.post('/auth/google', { token }),
-  getCurrentUser: () => api.get('/auth/me'),
+  getCurrentUser: () => api.get('/users/me'),
 }

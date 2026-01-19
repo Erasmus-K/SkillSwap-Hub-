@@ -42,7 +42,10 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     const response = await authApi.login(credentials)
     localStorage.setItem('access_token', response.data.access_token)
-    dispatch({ type: 'LOGIN_SUCCESS', payload: response.data.user })
+    
+    // Get user data after login
+    const userResponse = await authApi.getCurrentUser()
+    dispatch({ type: 'LOGIN_SUCCESS', payload: userResponse.data })
     return response.data
   }
 

@@ -4,10 +4,12 @@ import { authApi } from '../api/authApi'
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    full_name: '',
+    username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    bio: ''
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -26,13 +28,22 @@ const Register = () => {
 
     try {
       await authApi.register({
-        name: formData.name,
+        full_name: formData.full_name,
+        username: formData.username,
         email: formData.email,
-        password: formData.password
+        password: formData.password,
+        bio: formData.bio
       })
       navigate('/login', { state: { message: 'Registration successful! Please log in.' } })
     } catch (error) {
-      setError(error.response?.data?.detail || 'Registration failed')
+      const errorMsg = error.response?.data?.detail || 'Registration failed'
+      if (typeof errorMsg === 'string') {
+        setError(errorMsg)
+      } else if (Array.isArray(errorMsg)) {
+        setError(errorMsg.map(err => err.msg || err).join(', '))
+      } else {
+        setError('Registration failed')
+      }
     } finally {
       setLoading(false)
     }
@@ -59,12 +70,24 @@ const Register = () => {
           
           <div>
             <input
-              name="name"
+              name="full_name"
               type="text"
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="Full name"
-              value={formData.name}
+              value={formData.full_name}
+              onChange={handleChange}
+            />
+          </div>
+          
+          <div>
+            <input
+              name="username"
+              type="text"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Username"
+              value={formData.username}
               onChange={handleChange}
             />
           </div>
