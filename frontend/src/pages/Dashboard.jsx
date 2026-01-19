@@ -16,6 +16,8 @@ const Dashboard = () => {
         setSessions(response.data)
       } catch (error) {
         console.error('Error fetching sessions:', error)
+        // Could add user-facing error handling here
+        setSessions([])
       } finally {
         setLoading(false)
       }
