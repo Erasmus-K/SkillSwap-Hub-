@@ -4,7 +4,8 @@ import { authApi } from '../api/authApi'
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
+    full_name: '',
     email: '',
     password: '',
     confirmPassword: ''
@@ -26,7 +27,8 @@ const Register = () => {
 
     try {
       await authApi.register({
-        name: formData.name,
+        username: formData.username,
+        full_name: formData.full_name,
         email: formData.email,
         password: formData.password
       })
@@ -59,12 +61,24 @@ const Register = () => {
           
           <div>
             <input
-              name="name"
+              name="username"
+              type="text"
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Username"
+              value={formData.username}
+              onChange={handleChange}
+            />
+          </div>
+          
+          <div>
+            <input
+              name="full_name"
               type="text"
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               placeholder="Full name"
-              value={formData.name}
+              value={formData.full_name}
               onChange={handleChange}
             />
           </div>
