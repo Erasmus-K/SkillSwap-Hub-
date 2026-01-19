@@ -9,24 +9,42 @@ from ...schemas.session import Session as SessionSchema, SessionCreate, SessionU
 
 router = APIRouter()
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.orm import Session
+from sqlalchemy import text
+from typing import List
+from ..deps import get_db, get_current_user
+from ...models.session import Session as SessionModel
+from ...models.user_skills import SkillTag
+from ...models.user import User
+from ...schemas.session import Session as SessionSchema, SessionCreate, SessionUpdate
+
+router = APIRouter()
+
 @router.post("/", response_model=SessionSchema)
 def create_session(
     session: SessionCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Verify skill belongs to current user
-    skill = db.query(Skill).filter(Skill.id == session.skill_id).first()
-    if not skill:
+    # Verify skill tag exists and user can teach it
+    skill_tag = db.query(SkillTag).filter(SkillTag.id == session.skill_id).first()
+    if not skill_tag:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Skill not found"
         )
     
-    if skill.teacher_id != current_user.id:
+    # Check if user has this skill and can teach it
+    user_skill = db.execute(
+        text("SELECT * FROM user_skills WHERE user_id = :user_id AND skill_tag_id = :skill_tag_id AND is_teaching = 1"),
+        {"user_id": current_user.id, "skill_tag_id": session.skill_id}
+    ).first()
+    
+    if not user_skill:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Not authorized to create session for this skill"
+            detail="You are not authorized to teach this skill. Please add it to your teaching skills first."
         )
     
     db_session = SessionModel(**session.dict(), teacher_id=current_user.id)

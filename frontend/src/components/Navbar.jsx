@@ -23,6 +23,7 @@ const Navbar = () => {
               <>
                 <Link to="/dashboard" className="hover:text-blue-200">Dashboard</Link>
                 <Link to="/skills" className="hover:text-blue-200">Skills</Link>
+                <Link to="/skills-discovery" className="hover:text-blue-200">Find Teachers</Link>
                 <Link to="/teach" className="hover:text-blue-200">Teach</Link>
                 <Link to="/bookings" className="hover:text-blue-200">My Bookings</Link>
                 <Link to="/profile" className="hover:text-blue-200">Profile</Link>

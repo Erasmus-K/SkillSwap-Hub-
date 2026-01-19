@@ -8,6 +8,7 @@ import Register from '../pages/Register'
 import Dashboard from '../pages/Dashboard'
 import Skills from '../pages/Skills'
 import SkillDetails from '../pages/SkillDetails'
+import SkillsDiscovery from '../pages/SkillsDiscovery'
 import Teach from '../pages/Teach'
 import Bookings from '../pages/Bookings'
 import Profile from '../pages/Profile'
@@ -82,6 +83,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Profile />
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/skills-discovery" 
+        element={
+          <ProtectedRoute>
+            <SkillsDiscovery />
           </ProtectedRoute>
         } 
       />

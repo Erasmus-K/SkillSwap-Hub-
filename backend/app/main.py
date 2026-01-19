@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .api.routes import auth, users, skills, sessions, bookings
+from .api.routes import auth, users, skills, sessions, bookings, skill_tags
 from .db.session import engine, Base
 
 # Create database tables
@@ -23,6 +23,7 @@ app.include_router(users.router, prefix="/users", tags=["users"])
 app.include_router(skills.router, prefix="/skills", tags=["skills"])
 app.include_router(sessions.router, prefix="/sessions", tags=["sessions"])
 app.include_router(bookings.router, prefix="/bookings", tags=["bookings"])
+app.include_router(skill_tags.router, prefix="/skill-tags", tags=["skill-tags"])
 
 @app.get("/")
 def read_root():
