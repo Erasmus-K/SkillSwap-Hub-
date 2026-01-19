@@ -26,28 +26,66 @@ This project is a full-stack web application built as a Single Page Application 
 
 ## Setup and Installation
 
-1. Clone the repository
+### Backend Setup
+1. Navigate to backend directory: `cd backend`
 2. Create virtual environment: `python3 -m venv venv`
-3. Install dependencies: `venv/bin/pip install -r requirements.txt`
-4. Seed database: `venv/bin/python seed.py`
-5. Run application: `venv/bin/python app.py`
+3. Activate virtual environment: `source venv/bin/activate`
+4. Install dependencies: `pip install -r requirements.txt`
+
+### Frontend Setup
+1. Navigate to frontend directory: `cd frontend`
+2. Install dependencies: `npm install`
+
+### Running the Application
+
+**Option 1: Use the startup script (recommended)**
+```bash
+./start.sh
+```
+
+**Option 2: Run manually**
+
+Backend:
+```bash
+cd backend
+source venv/bin/activate
+python -m uvicorn app.main:app --reload --port 8000
+```
+
+Frontend (in a new terminal):
+```bash
+cd frontend
+npm run dev
+```
+
+### Access the Application
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
 
 ## API Endpoints
 
-- `GET /heroes` - List all heroes
-- `GET /heroes/:id` - Get hero with powers
-- `GET /powers` - List all powers
-- `GET /powers/:id` - Get specific power
-- `PATCH /powers/:id` - Update power description
-- `POST /hero_powers` - Create hero-power association
+- `GET /` - API root endpoint
+- `GET /health` - Health check
+- `POST /auth/register` - User registration
+- `POST /auth/login` - User login
+- `GET /users/me` - Get current user profile
+- `GET /skills` - List all skills
+- `POST /skills` - Create new skill
+- `GET /sessions` - List learning sessions
+- `POST /sessions` - Create new session
+- `GET /bookings` - List user bookings
+- `POST /bookings` - Create new booking
 
 ## Technologies Used
 
-- React 
+- React 18.2.0
 - Python 3.12
-- Flask 2.3.3
-- SQLAlchemy (Flask-SQLAlchemy 3.0.5)
+- FastAPI 0.104.1
+- SQLAlchemy 2.0.23
 - SQLite Database
+- Vite (Frontend build tool)
+- Tailwind CSS
 
 ## Contact
 
