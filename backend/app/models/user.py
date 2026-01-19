@@ -1,24 +1,23 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
+from sqlalchemy import Column, Integer, String, DateTime, Enum
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from ..db.session import Base
+from app.db.database import Base
+import enum
+
+class UserRole(str, enum.Enum):
+    STUDENT = "student"
+    TEACHER = "teacher"
+    ADMIN = "admin"
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
-    username = Column(String, unique=True, index=True, nullable=False)
-    full_name = Column(String, nullable=False)
-    hashed_password = Column(String, nullable=False)
-    is_active = Column(Boolean, default=True)
-    bio = Column(Text)
-    profile_image = Column(String)
-    google_id = Column(String, unique=True, nullable=True)
+    password_hash = Column(String, nullable=False)
+    role = Column(Enum(UserRole), default=UserRole.STUDENT)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-
+    
     # Relationships
-    skills = relationship("Skill", back_populates="teacher")
-    sessions = relationship("Session", back_populates="teacher")
-    bookings = relationship("Booking", back_populates="student")
+    skills = relationship("Skill", back_populates="creator")
