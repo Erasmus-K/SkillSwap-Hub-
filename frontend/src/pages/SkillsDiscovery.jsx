@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { getSessions, bookSession } from "../api/sessionApi"; // ✅ Correct named imports
+import { sessionApi } from "../api/sessionApi";
 import { skillTagsApi } from "../api/skillTagsApi";
 import Navbar from "../components/Navbar";
 
@@ -28,8 +28,8 @@ const SkillsDiscovery = () => {
 
   const loadAvailableSessions = async () => {
     try {
-      const data = await getSessions();
-      setAvailableSessions(data);
+      const response = await sessionApi.getSessions();
+      setAvailableSessions(response.data);
     } catch (error) {
       console.error("Error loading sessions:", error);
     } finally {
@@ -47,12 +47,12 @@ const SkillsDiscovery = () => {
     setBookingSuccess(null);
 
     try {
-      const data = await bookSession(sessionId);
+      const response = await sessionApi.bookSession(sessionId);
       setBookingSuccess(`Session booked successfully!`);
       
       // Update Meet link if returned from backend
-      if (data.meet_link && setMeetLink) {
-        setMeetLink(data.meet_link);
+      if (response.data?.meet_link && setMeetLink) {
+        setMeetLink(response.data.meet_link);
       }
     } catch (error) {
       console.error("Error booking session:", error);

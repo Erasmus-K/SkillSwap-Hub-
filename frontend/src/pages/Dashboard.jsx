@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
-import { getSessions } from "../api/sessionApi";
+import { sessionApi } from "../api/sessionApi";
 import SessionCard from "../components/SessionCard";
 import Navbar from "../components/Navbar";
 
@@ -12,8 +12,8 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const data = await getSessions();
-        setSessions(data);
+        const response = await sessionApi.getSessions();
+        setSessions(response.data);
       } catch (error) {
         console.error("Error fetching sessions:", error);
       } finally {
