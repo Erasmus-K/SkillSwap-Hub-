@@ -1,25 +1,12 @@
-import axios from "axios";
+import api from './axios'
 
-// Fetch all sessions
-export const getSessions = async () => {
-  try {
-    const response = await axios.get("http://localhost:8000/sessions");
-    return response.data;
-  } catch (error) {
-    console.error("Error fetching sessions:", error.response?.data || error);
-    throw error;
-  }
-};
-
-// Book a session
-export const bookSession = async (sessionId) => {
-  try {
-    const response = await axios.post("http://localhost:8000/bookings", {
-      session_id: sessionId,
-    });
-    return response.data;
-  } catch (error) {
-    console.error("Error booking session:", error.response?.data || error);
-    throw error;
-  }
-};
+export const sessionApi = {
+  getSessions: () => api.get('/sessions'),
+  getSession: (id) => api.get(`/sessions/${id}`),
+  createSession: (sessionData) => api.post('/sessions', sessionData),
+  updateSession: (id, sessionData) => api.put(`/sessions/${id}`, sessionData),
+  deleteSession: (id) => api.delete(`/sessions/${id}`),
+  bookSession: (sessionId) => api.post(`/sessions/${sessionId}/book`),
+  cancelBooking: (sessionId) => api.delete(`/sessions/${sessionId}/book`),
+  getMyBookings: () => api.get('/bookings/my'),
+}

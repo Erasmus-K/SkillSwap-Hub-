@@ -19,25 +19,9 @@ const authReducer = (state, action) => {
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, {
     user: null,
-    isAuthenticated: false,
-    loading: true,
+    isAuthenticated: !!localStorage.getItem('access_token'),
+    loading: false,
   })
-
-  useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    if (token) {
-      authApi.getCurrentUser()
-        .then(response => {
-          dispatch({ type: 'LOGIN_SUCCESS', payload: response.data })
-        })
-        .catch(() => {
-          localStorage.removeItem('access_token')
-          dispatch({ type: 'SET_LOADING', payload: false })
-        })
-    } else {
-      dispatch({ type: 'SET_LOADING', payload: false })
-    }
-  }, [])
 
   const login = async (credentials) => {
     const response = await authApi.login(credentials)
@@ -50,11 +34,6 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = async () => {
-    try {
-      await authApi.logout()
-    } catch (error) {
-      console.error('Logout error:', error)
-    }
     localStorage.removeItem('access_token')
     dispatch({ type: 'LOGOUT' })
   }

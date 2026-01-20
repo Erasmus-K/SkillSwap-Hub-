@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { bookSession } from "../api/sessionApi";
+import { sessionApi } from "../api/sessionApi";
 
 const LiveSession = ({ session }) => {
   const [loading, setLoading] = useState(false);
@@ -15,13 +15,13 @@ const LiveSession = ({ session }) => {
     setSuccess(false);
 
     try {
-      const data = await bookSession(session.id);
-      console.log("Booking response:", data);
+      const response = await sessionApi.bookSession(session.id);
+      console.log("Booking response:", response.data);
       setSuccess(true);
 
       // Update Meet link if backend returns it
-      if (data.meet_link) {
-        setMeetLink(data.meet_link);
+      if (response.data?.meet_link) {
+        setMeetLink(response.data.meet_link);
       }
     } catch (err) {
       console.error("Error booking session:", err.response?.data || err);
