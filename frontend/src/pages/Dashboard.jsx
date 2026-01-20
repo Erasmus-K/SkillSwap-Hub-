@@ -1,28 +1,28 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
-import { sessionApi } from '../api/sessionApi'
-import SessionCard from '../components/SessionCard'
-import Navbar from '../components/Navbar'
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { getSessions } from "../api/sessionApi";
+import SessionCard from "../components/SessionCard";
+import Navbar from "../components/Navbar";
 
 const Dashboard = () => {
-  const { user } = useAuth()
-  const [sessions, setSessions] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { user } = useAuth();
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const response = await sessionApi.getSessions()
-        setSessions(response.data)
+        const data = await getSessions();
+        setSessions(data);
       } catch (error) {
-        console.error('Error fetching sessions:', error)
+        console.error("Error fetching sessions:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    fetchSessions()
-  }, [])
+    fetchSessions();
+  }, []);
 
   if (loading) {
     return (
@@ -32,7 +32,7 @@ const Dashboard = () => {
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
         </div>
       </>
-    )
+    );
   }
 
   return (
@@ -43,9 +43,7 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold text-gray-900">
             Welcome back, {user?.name}!
           </h1>
-          <p className="text-gray-600 mt-2">
-            Discover new skills and share your expertise
-          </p>
+          <p className="text-gray-600 mt-2">Discover new skills and share your expertise</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -80,7 +78,7 @@ const Dashboard = () => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

@@ -1,46 +1,68 @@
-import { useState, useEffect } from 'react'
-import { skillTagsApi } from '../api/skillTagsApi'
-import { sessionApi } from '../api/sessionApi'
-import Navbar from '../components/Navbar'
+import { useState, useEffect } from "react";
+import { getSessions, bookSession } from "../api/sessionApi"; // ✅ Correct named imports
+import { skillTagsApi } from "../api/skillTagsApi";
+import Navbar from "../components/Navbar";
 
 const SkillsDiscovery = () => {
-  const [myLearningSkills, setMyLearningSkills] = useState([])
-  const [availableTeachers, setAvailableTeachers] = useState([])
-  const [availableSessions, setAvailableSessions] = useState([])
-  const [selectedSkill, setSelectedSkill] = useState('')
-  const [loading, setLoading] = useState(true)
+  const [myLearningSkills, setMyLearningSkills] = useState([]);
+  const [availableSessions, setAvailableSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [bookingError, setBookingError] = useState(null);
+  const [bookingSuccess, setBookingSuccess] = useState(null);
 
   useEffect(() => {
-    loadMyLearningSkills()
-    loadAvailableSessions()
-  }, [])
+    loadMyLearningSkills();
+    loadAvailableSessions();
+  }, []);
 
   const loadMyLearningSkills = async () => {
     try {
-      const response = await skillTagsApi.getMySkills()
-      const learningSkills = response.data.filter(skill => skill.is_learning)
-      setMyLearningSkills(learningSkills)
+      const response = await skillTagsApi.getMySkills();
+      const learningSkills = response.data.filter((skill) => skill.is_learning);
+      setMyLearningSkills(learningSkills);
     } catch (error) {
-      console.error('Error loading learning skills:', error)
+      console.error("Error loading learning skills:", error);
     }
-  }
+  };
 
   const loadAvailableSessions = async () => {
     try {
-      const response = await sessionApi.getSessions()
-      setAvailableSessions(response.data)
+      const data = await getSessions();
+      setAvailableSessions(data);
     } catch (error) {
-      console.error('Error loading sessions:', error)
+      console.error("Error loading sessions:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const getSessionsForSkill = (skillId) => {
-    return availableSessions.filter(session => session.skill_id === skillId)
-  }
+    return availableSessions.filter((session) => session.skill_id === skillId);
+  };
 
-  if (loading) return <div className="text-center py-8">Loading...</div>
+  const handleBookSession = async (sessionId, setMeetLink) => {
+    setBookingLoading(true);
+    setBookingError(null);
+    setBookingSuccess(null);
+
+    try {
+      const data = await bookSession(sessionId);
+      setBookingSuccess(`Session booked successfully!`);
+      
+      // Update Meet link if returned from backend
+      if (data.meet_link && setMeetLink) {
+        setMeetLink(data.meet_link);
+      }
+    } catch (error) {
+      console.error("Error booking session:", error);
+      setBookingError(error.response?.data?.detail || "Something went wrong");
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  if (loading) return <div className="text-center py-8">Loading...</div>;
 
   return (
     <>
@@ -58,7 +80,7 @@ const SkillsDiscovery = () => {
               Add skills you want to learn to see available teachers and sessions.
             </p>
             <button
-              onClick={() => window.location.href = '/profile'}
+              onClick={() => (window.location.href = "/profile")}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded transition-colors"
             >
               Add Learning Goals
@@ -66,8 +88,8 @@ const SkillsDiscovery = () => {
           </div>
         ) : (
           <div className="space-y-8">
-            {myLearningSkills.map(skill => {
-              const sessions = getSessionsForSkill(skill.id)
+            {myLearningSkills.map((skill) => {
+              const sessions = getSessionsForSkill(skill.id);
               return (
                 <div key={skill.id} className="bg-white border border-gray-200 rounded-lg p-6">
                   <div className="flex justify-between items-start mb-4">
@@ -85,23 +107,38 @@ const SkillsDiscovery = () => {
                     <div>
                       <h4 className="font-medium text-gray-900 mb-3">Available Sessions ({sessions.length})</h4>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {sessions.map(session => (
-                          <div key={session.id} className="border border-gray-200 rounded-lg p-4">
-                            <h5 className="font-medium text-gray-900 mb-2">{session.title}</h5>
-                            <p className="text-sm text-gray-600 mb-2">{session.description}</p>
-                            <div className="text-xs text-gray-500 space-y-1">
-                              <p>📅 {new Date(session.start_time).toLocaleDateString()}</p>
-                              <p>⏰ {new Date(session.start_time).toLocaleTimeString()}</p>
-                              <p>👥 Max {session.max_participants} participants</p>
+                        {sessions.map((session) => {
+                          const [meetLink, setMeetLink] = useState(session.meet_link || "");
+
+                          return (
+                            <div key={session.id} className="border border-gray-200 rounded-lg p-4">
+                              <h5 className="font-medium text-gray-900 mb-2">{session.title}</h5>
+                              <p className="text-sm text-gray-600 mb-2">{session.description}</p>
+                              <div className="text-xs text-gray-500 space-y-1">
+                                <p>📅 {new Date(session.start_time).toLocaleDateString()}</p>
+                                <p>⏰ {new Date(session.start_time).toLocaleTimeString()}</p>
+                                <p>👥 Max {session.max_participants} participants</p>
+                              </div>
+
+                              {meetLink && (
+                                <p className="mt-2 text-blue-600 underline text-sm">
+                                  Meet Link: <a href={meetLink} target="_blank" rel="noopener noreferrer">{meetLink}</a>
+                                </p>
+                              )}
+
+                              <button
+                                onClick={() => handleBookSession(session.id, setMeetLink)}
+                                className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm transition-colors"
+                                disabled={bookingLoading}
+                              >
+                                {bookingLoading ? "Booking..." : "Book Session"}
+                              </button>
+
+                              {bookingError && <p className="text-red-600 text-sm mt-1">{bookingError}</p>}
+                              {bookingSuccess && <p className="text-green-600 text-sm mt-1">{bookingSuccess}</p>}
                             </div>
-                            <button
-                              onClick={() => window.location.href = `/sessions/${session.id}`}
-                              className="w-full mt-3 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded text-sm transition-colors"
-                            >
-                              Book Session
-                            </button>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   ) : (
@@ -112,20 +149,20 @@ const SkillsDiscovery = () => {
                       </p>
                       <button
                         className="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded text-sm transition-colors"
-                        onClick={() => alert('Session request feature coming soon!')}
+                        onClick={() => alert("Session request feature coming soon!")}
                       >
                         Request Session
                       </button>
                     </div>
                   )}
                 </div>
-              )
+              );
             })}
           </div>
         )}
       </div>
     </>
-  )
-}
+  );
+};
 
-export default SkillsDiscovery
+export default SkillsDiscovery;
